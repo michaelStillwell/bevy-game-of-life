@@ -1,8 +1,9 @@
 use crate::resources::Cell;
-use crate::utilities::{in_map, new_map, Bounds2, Vec2};
+use crate::utilities::{in_map, new_map, Vec2};
 
 const NEIGHBORS: [(i8, i8); 8] = [
-    /// (x, y)
+    // (x, y)
+
     // top left
     (-1, -1),
     // top
@@ -66,9 +67,9 @@ impl Board {
 
         for (y, col) in self.map.iter().enumerate() {
             for (x, row) in col.iter().enumerate() {
-                map[y][x] = match self.map[y][x] {
+                map[y][x] = match row {
                     Cell::Empty => {
-                        if self.will_spawn(x as u8, y as u8) {
+                        if self.will_spawn(x, y) {
                             changed = true;
                             Cell::Full
                         } else {
@@ -76,7 +77,7 @@ impl Board {
                         }
                     }
                     Cell::Full => {
-                        if self.will_die(x as u8, y as u8) {
+                        if self.will_die(x, y) {
                             changed = true;
                             Cell::Empty
                         } else {
@@ -97,7 +98,7 @@ impl Board {
         let mut map = new_map(self.height, self.width);
 
         for (y, col) in self.map.iter().enumerate() {
-            for (x, row) in col.iter().enumerate() {
+            for (x, _row) in col.iter().enumerate() {
                 map[y][x] = Cell::Empty;
             }
         }
@@ -110,15 +111,15 @@ impl Board {
         }
     }
 
-    fn will_die(&self, x: u8, y: u8) -> bool {
-        let neighbor_count = self.get_neighbors(x as usize, y as usize);
+    fn will_die(&self, x: usize, y: usize) -> bool {
+        let neighbor_count = self.get_neighbors(x, y);
         //  if four or more neighbors exist OR if one or less neighbors exist
         neighbor_count >= 4 || neighbor_count <= 1
     }
 
-    fn will_spawn(&self, x: u8, y: u8) -> bool {
+    fn will_spawn(&self, x: usize, y: usize) -> bool {
         // if three neighbors exist
-        self.get_neighbors(x as usize, y as usize) == 3
+        self.get_neighbors(x, y) == 3
     }
 
     fn get_neighbors(&self, x: usize, y: usize) -> u8 {
