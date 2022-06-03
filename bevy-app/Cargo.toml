@@ -1,14 +1,11 @@
 [package]
-name = "game-of-life"
+name = "bevy-app"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[features]
-default = []
-debug = ["console-app"]
-
 [dependencies]
-bevy-app = { path = "bevy-app" }
-console-app = { path = "console-app", optional = true }
+bevy = "0.7"
+bevy-inspector-egui = "0.11"
+gof-plugin = { path = "../gof-plugin" }
