@@ -1,3 +1,4 @@
+// NOTE: not 100% I need this
 pub struct Vec2 {
     pub x: i8,
     pub y: i8,
@@ -9,6 +10,7 @@ impl Vec2 {
     }
 }
 
+// NOTE: not 100% I need this
 pub struct Bounds2 {
     pub position: Vec2,
     pub size: Vec2,

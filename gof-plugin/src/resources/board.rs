@@ -1,5 +1,5 @@
 use crate::resources::Cell;
-use crate::utilities::{in_map, new_map, Vec2};
+use crate::utilities::Vec2;
 
 const NEIGHBORS: [(i8, i8); 8] = [
     // (x, y)
@@ -22,34 +22,34 @@ const NEIGHBORS: [(i8, i8); 8] = [
     (1, 1),
 ];
 
-/// Board that houses all of the cells for the game
+// Board that houses all of the cells for the game
 #[derive(Debug, Clone)]
 pub struct Board {
     height: u8,
     width: u8,
-    /// all of the cells, false -> empty, true -> filled
+    // all of the cells, false -> empty, true -> filled
     map: Vec<Vec<Cell>>,
 }
 
 impl Board {
-    /// Instantiate new board with all empty cells of given size
+    // Instantiate new board with all empty cells of given size
     pub fn new(height: u8, width: u8) -> Self {
         Self {
-            map: new_map(height, width),
+            map: Self::new_map(height, width),
             height,
             width,
         }
     }
 
-    /// Instantiate new board from a given 2d Vec
+    // Instantiate new board from a given 2d Vec
     pub fn from(map: Vec<Vec<Cell>>) -> Self {
         // TODO: this is vulnerable to crashing or weird behavior if not given rectangle vector
         let height = map.len() as u8;
-        let width = map[0].len() as u8;
+        let width = map.iter().map(|v| v.len()).max().unwrap() as u8;
         Self { map, height, width }
     }
 
-    /// Converts board to a string
+    // Converts board to a string
     pub fn to_string(&self) -> String {
         let mut output = String::new();
         output.push_str("[\n");
@@ -62,7 +62,7 @@ impl Board {
     }
 
     pub fn next(&mut self) -> bool {
-        let mut map = new_map(self.height, self.width);
+        let mut map = Self::new_map(self.height, self.width);
         let mut changed = false;
 
         for (y, col) in self.map.iter().enumerate() {
@@ -95,7 +95,7 @@ impl Board {
     }
 
     pub fn empty_map(&mut self) {
-        let mut map = new_map(self.height, self.width);
+        let mut map = Self::new_map(self.height, self.width);
 
         for (y, col) in self.map.iter().enumerate() {
             for (x, _row) in col.iter().enumerate() {
@@ -106,9 +106,16 @@ impl Board {
     }
 
     pub fn fill_at(&mut self, x: usize, y: usize) {
-        if in_map(&self.map, Vec2::new(x as i8, y as i8)) {
+        if self.in_map(Vec2::new(x as i8, y as i8)) {
             self.map[y][x] = Cell::Full;
         }
+    }
+
+    fn new_map(height: u8, width: u8) -> Vec<Vec<Cell>> {
+        (0..height)
+            .into_iter()
+            .map(|_| (0..width).into_iter().map(|_| Cell::Empty).collect())
+            .collect()
     }
 
     fn will_die(&self, x: usize, y: usize) -> bool {
@@ -123,15 +130,21 @@ impl Board {
     }
 
     fn get_neighbors(&self, x: usize, y: usize) -> u8 {
-        let mut neighbor_count = 0u8;
-        for (nx, ny) in NEIGHBORS {
-            let position = Vec2::new(x as i8 + nx, y as i8 + ny);
-            if in_map(&self.map, Vec2::new(position.x, position.y))
-                && !self.map[position.y as usize][position.x as usize].is_empty()
-            {
-                neighbor_count += 1;
-            }
-        }
-        neighbor_count
+        // NOTE: I changed this because I like it better, might not be faster though
+        NEIGHBORS
+            .iter()
+            // .copied() // not sure why you need to copy?
+            .map(|(nx, ny)| (x as i8 + nx, y as i8 + ny))
+            .filter(|(x, y)| {
+                self.in_map(Vec2::new(*x, *y)) && !self.map[*y as usize][*x as usize].is_empty()
+            })
+            .count() as u8
+    }
+
+    fn in_map(&self, position: Vec2) -> bool {
+        position.x >= 0
+            && position.y >= 0
+            && position.x < self.width as i8
+            && position.y < self.height as i8
     }
 }
