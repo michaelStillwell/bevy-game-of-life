@@ -219,6 +219,8 @@ dependencies = [
  "bevy",
  "bevy-inspector-egui",
  "gof-plugin",
+ "rand",
+ "serde",
 ]
 
 [[package]]

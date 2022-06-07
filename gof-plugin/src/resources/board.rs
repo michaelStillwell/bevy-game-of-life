@@ -49,6 +49,18 @@ impl Board {
         Self { map, height, width }
     }
 
+    pub fn height(&self) -> u8 {
+        self.height
+    }
+
+    pub fn width(&self) -> u8 {
+        self.width
+    }
+
+    pub fn map(&self) -> &Vec<Vec<Cell>> {
+        &self.map
+    }
+
     // Converts board to a string
     pub fn to_string(&self) -> String {
         let mut output = String::new();

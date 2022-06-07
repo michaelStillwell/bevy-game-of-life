@@ -8,4 +8,6 @@ edition = "2021"
 [dependencies]
 bevy = "0.7"
 bevy-inspector-egui = "0.11"
+serde = "1.0"
+rand = "0.8"
 gof-plugin = { path = "../gof-plugin" }
